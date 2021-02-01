@@ -20,7 +20,7 @@ namespace grpcserver.Services
         private static List<CityResponse> GetHttpCitiesAsync()
         {
             var rnd = new Random();
-            return Enumerable.Range(1, rnd.Next(1, 1000)).Select(x => 
+            return Enumerable.Range(1, rnd.Next(1, 10_000)).Select(x => 
                 new Faker<CityResponse>()
                     .RuleFor(o => o.Id, f => f.Address.GetHashCode())
                     .RuleFor(o => o.Name, f => f.Address.City())

@@ -13,14 +13,24 @@ namespace gRPCClient_csharp
             var client = new Cities.CitiesClient(chanel);
 
             Console.WriteLine("List of cities");
+            var dtIni = DateTime.Now;
+            var count = 0;
             using (var call = client.GetCities(new CityRequest()))
             {
                 while (await call.ResponseStream.MoveNext())
                 {
                     var ci = call.ResponseStream.Current;
                     Console.WriteLine($"{ci.Id} - {ci.Name}");
+                    count ++;
                 }
             }
+            var dtEnd = DateTime.Now;
+            Console.WriteLine($"Count: {count}");
+            Console.WriteLine($"Ini time: {dtIni}");
+            Console.WriteLine($"End time: {dtEnd}");
+            Console.WriteLine($"Diff time: {dtEnd - dtIni}");
+            
+            
         }
     }
 }
