@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "gRPCClient_csharp";
+
+package City;
+
+service Cities {
+  rpc IsCity (CityByNameRequest) returns (CityResponse);
+  rpc GetCities (CityRequest) returns (stream CityResponse);
+}
+
+message CityByNameRequest {
+  string name = 1;
+}
+
+message CityRequest {
+
+}
+
+message CityResponse {
+  int32 id = 1;
+  string name = 2;
+}
