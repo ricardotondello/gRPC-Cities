@@ -10,6 +10,14 @@ services:
       grpc_network:
     ports:
       - "5000:80"
-      
+  
+  redisserver:
+    container_name: redisserver
+    image: redis
+    ports: 
+      - "5002:6379"
+    networks:
+      grpc_network:
+
 networks:
   grpc_network:
