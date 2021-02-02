@@ -9,6 +9,8 @@ namespace gRPCClient_csharp
     {
         static async Task Main(string[] args)
         {
+            string serverAddress = Environment.GetEnvironmentVariable("SERVER_ADDRESS");
+
             var chanel = GrpcChannel.ForAddress("https://localhost:5001");
             var client = new Cities.CitiesClient(chanel);
 
