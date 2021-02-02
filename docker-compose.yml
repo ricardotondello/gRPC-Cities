@@ -1,12 +1,15 @@
-version: '3.1'
-
+version: "3.7"
 services:
+
   grpcserver:
-    image: grpserver
+    container_name: grpcserver
     build:
       context: .
       dockerfile: grpcserver/Dockerfile
+    networks:
+      grpc_network:
     ports:
-      - 5001:5001
-    # environment:
-      # - SERVER_ADDRESS=https:\\localhost:5001
+      - "5000:80"
+      
+networks:
+  grpc_network:
