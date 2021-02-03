@@ -1,44 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Bogus;
-using grpcserver.Extensions;
-using Microsoft.Extensions.Caching.Distributed;
+using grpcserver.Interfaces;
 
 namespace grpcserver.Services
 {
     public class CityService : Cities.CitiesBase
     {
         private readonly ILogger<CityService> _logger;
-        private static IDistributedCache _cache;
-        public CityService(ILogger<CityService> logger, IDistributedCache cache)
+        private static ICityCachedData _cachedData;
+
+        public CityService(ILogger<CityService> logger, ICityCachedData _cacheData)
         {
             _logger = logger;
-            _cache = cache;
+            _cachedData = _cacheData;
         }
-
-        private static async Task<CityResponse[]> GetHttpCitiesAsync()
+        private static async Task<List<CityResponse>> GetHttpCitiesAsync()
         {
-            var recordKey = nameof(CityResponse) + "_" + DateTime.Now.ToString("yyyyMMdd_hhmm");
+            var list = await _cachedData.GetCities();
 
-            var list = await _cache.GetRecordAsync<CityResponse[]>(recordKey);
-
-            if (list is { }) return list;
+            if (list != null) return list;
 
             System.Console.WriteLine("Generated at " + DateTime.Now.ToString("yyyyMMdd_hhmm"));
             
             var rnd = new Random();
-            list = Enumerable.Range(1, rnd.Next(1, 10_000)).Select(x => 
-                    new Faker<CityResponse>()
-                        .RuleFor(o => o.Id, f => f.Address.GetHashCode())
-                        .RuleFor(o => o.Name, f => f.Address.City())
-                        .Generate())
-                .ToArray();
-            await _cache.SetRecordAsync(recordKey, list);
+            list = new List<CityResponse>();            
+            
+            Parallel.For(1, rnd.Next(1, 10_000), (i, state) => 
+            {
+                var current = new Faker<CityResponse>()
+                            .RuleFor(o => o.Id, f => f.Address.GetHashCode())
+                            .RuleFor(o => o.Name, f => f.Address.City())
+                            .Generate();
+                list.Add(current);
+            });
+
+            await _cachedData.SetCities(list);
             return list;
         }        
         

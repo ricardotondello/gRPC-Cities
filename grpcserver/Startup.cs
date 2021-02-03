@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using grpcserver.Interfaces;
 using grpcserver.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +27,7 @@ namespace grpcserver
                 options.Configuration = config.GetConnectionString("Redis");
                 options.InstanceName = "Redis_gRPC_";
             });
+            services.AddScoped<ICityCachedData, CityCachedData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
